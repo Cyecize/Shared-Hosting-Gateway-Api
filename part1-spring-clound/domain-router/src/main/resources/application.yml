@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: website1
+          uri: http://192.168.1.200:7070
+          predicates:
+            - Host=**.website1.test**
+        - id: website2
+          uri: http://192.168.1.200:5050
+          predicates:
+            - Host=**.website2.test**
+        - id: website3
+          uri: http://192.168.1.200:7080
+          predicates:
+            - Host=**.website3.test**
+server:
+  port: 80
