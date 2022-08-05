@@ -1,14 +1,14 @@
 [
   {
-    "host": "aa.com",
+    "host": "website1.test",
     "subdomains": ["www"],
-    "destinationHost": "localhost",
-    "destinationPort": 8000
+    "destinationHost": "192.168.1.200",
+    "destinationPort": 7070
   },
   {
-    "host": "192.168.0.1",
+    "host": "website2.test",
     "subdomains": [],
-    "destinationHost": "localhost",
-    "destinationPort": 8080
+    "destinationHost": "192.168.1.200",
+    "destinationPort": 7090
   }
 ]
