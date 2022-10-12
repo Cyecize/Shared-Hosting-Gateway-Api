@@ -4,6 +4,7 @@ import com.cyecize.domainrouter.api.options.OptionsService;
 import com.cyecize.domainrouter.api.options.RouteOption;
 import com.cyecize.domainrouter.error.CannotParseRequestException;
 import com.cyecize.domainrouter.util.HttpProtocolUtils;
+import com.cyecize.domainrouter.util.PoolService;
 import com.cyecize.ioc.annotations.PostConstruct;
 import com.cyecize.ioc.annotations.Service;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,8 @@ import static com.cyecize.domainrouter.util.HttpProtocolUtils.transferHttpRespon
 public class ConnectionHandlerImpl implements ConnectionHandler {
 
     private final OptionsService optionsService;
+
+    private final PoolService poolService;
 
     /**
      * Mapping of host to the desired destination server.
@@ -113,7 +116,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
                                        Socket clientSocket,
                                        Socket destServerSocket,
                                        boolean closeOnFinish) {
-        new Thread(() -> {
+        this.poolService.submit(() -> {
             try {
                 runnable.run();
             } catch (IOException ignored) {
@@ -123,7 +126,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             if (closeOnFinish) {
                 this.closeConnections(clientSocket, destServerSocket);
             }
-        }).start();
+        });
     }
 
     private void closeConnections(Socket clientSocket, Socket destServerSocket) {

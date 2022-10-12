@@ -31,6 +31,8 @@ public class AppStartUp {
         final int port = getPort();
 
         new Thread(() -> {
+            Thread.currentThread().setName("Server Thread");
+
             log.info("Try port {}.", port);
             try (final ServerSocket server = new ServerSocket(port)) {
                 log.info("Start listening for connections!");
