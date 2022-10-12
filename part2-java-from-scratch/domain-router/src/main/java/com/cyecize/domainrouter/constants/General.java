@@ -14,9 +14,15 @@ public class General {
 
     public static final String SETTINGS_FILE_NAME = "options.json";
 
+    public static final String ENV_VAR_PORT_NAME = "port";
+
     public static final String ENV_VAR_OPTIONS_NAME = "options";
+
+    public static final String ENV_VAR_POOL_SIZE_NAME = "poolSize";
 
     public static final int READ_BUFFER_SIZE = 8196;
 
     public static final int DEFAULT_PORT = 80;
+
+    public static final int DEFAULT_THREAD_POOL_SIZE = 20;
 }

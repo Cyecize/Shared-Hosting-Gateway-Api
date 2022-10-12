@@ -2,6 +2,7 @@ package com.cyecize.domainrouter;
 
 import com.cyecize.domainrouter.api.connection.ConnectionHandler;
 import com.cyecize.domainrouter.constants.General;
+import com.cyecize.domainrouter.util.PoolService;
 import com.cyecize.ioc.MagicInjector;
 import com.cyecize.ioc.annotations.Service;
 import com.cyecize.ioc.annotations.StartUp;
@@ -11,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 @Slf4j
@@ -25,9 +24,10 @@ public class AppStartUp {
 
     private final ConnectionHandler connectionHandler;
 
+    private final PoolService poolService;
+
     @StartUp
     public void startUp() {
-        final ExecutorService pool = Executors.newFixedThreadPool(10);
         final int port = getPort();
 
         new Thread(() -> {
@@ -37,7 +37,7 @@ public class AppStartUp {
 
                 while (true) {
                     final Socket client = server.accept();
-                    pool.submit(() -> this.connectionHandler.process(client));
+                    this.poolService.submit(() -> this.connectionHandler.process(client));
                 }
             } catch (IOException e) {
                 log.error("Error while initializing server socket.", e);
@@ -46,8 +46,8 @@ public class AppStartUp {
     }
 
     private static int getPort() {
-        if (System.getenv("port") != null) {
-            return Integer.parseInt(System.getenv("port").trim());
+        if (System.getenv().containsKey(General.ENV_VAR_PORT_NAME)) {
+            return Integer.parseInt(System.getenv(General.ENV_VAR_PORT_NAME).trim());
         } else {
             return General.DEFAULT_PORT;
         }
