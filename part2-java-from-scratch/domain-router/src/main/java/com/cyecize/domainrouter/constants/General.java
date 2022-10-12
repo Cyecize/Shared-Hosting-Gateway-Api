@@ -25,4 +25,6 @@ public class General {
     public static final int DEFAULT_PORT = 80;
 
     public static final int DEFAULT_THREAD_POOL_SIZE = 20;
+
+    public static final int MIN_THREAD_POOL_SIZE = 3;
 }
