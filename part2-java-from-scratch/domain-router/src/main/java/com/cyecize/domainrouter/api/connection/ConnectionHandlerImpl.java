@@ -72,7 +72,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             try {
                 metadata = HttpProtocolUtils.parseMetadataLines(clientIn, false);
             } catch (CannotParseRequestException ex) {
-                log.warn("Error while reading HTTP Request metadata.", ex);
+                log.warn("Error while reading HTTP Request metadata. {}", ex.getMessage());
                 socket.close();
                 return;
             }
