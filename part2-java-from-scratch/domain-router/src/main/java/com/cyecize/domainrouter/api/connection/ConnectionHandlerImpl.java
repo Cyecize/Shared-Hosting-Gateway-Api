@@ -94,8 +94,8 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             try {
                 serverConnection = new Socket(server.getHost(), server.getPort());
             } catch (IOException ex) {
-                log.warn("Could not establish connection to server {}:{}. Message: {}",
-                        server.getHost(), server.getPort(), ex.getMessage()
+                log.warn("Could not establish connection to server {}:{}, Host: {}. Message: {}",
+                        server.getHost(), server.getPort(), headers.get("Host"), ex.getMessage()
                 );
                 socket.close();
                 return;
