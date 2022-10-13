@@ -65,6 +65,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
     @Override
     public void process(Socket socket) {
         try {
+            Thread.currentThread().setName("Client connection thread");
             final InputStream clientIn = socket.getInputStream();
             final OutputStream clientOut = socket.getOutputStream();
 
@@ -82,11 +83,13 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             final String host = HttpProtocolUtils.getHost(socket, headers);
 
             if (!this.domainsMap.containsKey(host)) {
+                log.warn("No such host " + host);
                 socket.close();
                 return;
             }
 
             final DestinationDto server = this.domainsMap.get(host);
+            Thread.currentThread().setName("Client connection thread " + server.getHost() + " " + server.getPort());
             final Socket serverConnection;
             try {
                 serverConnection = new Socket(server.getHost(), server.getPort());
@@ -99,14 +102,24 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             }
 
             this.asyncSocketConnection(
-                    () -> transferHttpRequest(clientIn, metadata, contentLength, serverConnection.getOutputStream()),
+                    () -> {
+                        Thread.currentThread().setName(String.format("Req transfer thread %s:%s",
+                                server.getHost(), server.getPort())
+                        );
+                        transferHttpRequest(clientIn, metadata, contentLength, serverConnection.getOutputStream());
+                    },
                     socket,
                     serverConnection,
                     false
             );
 
             this.asyncSocketConnection(
-                    () -> transferHttpResponse(serverConnection.getInputStream(), clientOut),
+                    () -> {
+                        Thread.currentThread().setName(String.format("Response transfer thread %s:%s",
+                                server.getHost(), server.getPort())
+                        );
+                        transferHttpResponse(serverConnection.getInputStream(), clientOut);
+                    },
                     socket,
                     serverConnection,
                     true

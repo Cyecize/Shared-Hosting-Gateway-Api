@@ -30,7 +30,16 @@ public class PoolService {
     public Future<?> submit(Runnable task) {
         return this.pool.submit(() -> {
             this.runningTasks.incrementAndGet();
+
+            final Thread currentThread = Thread.currentThread();
+            final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(
+                    () -> log.error("Stuck on: {}", currentThread.getName()), 5, 5, TimeUnit.MINUTES
+            );
+
             task.run();
+
+            scheduler.shutdownNow();
             this.runningTasks.decrementAndGet();
         });
     }
