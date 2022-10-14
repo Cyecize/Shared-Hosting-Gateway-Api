@@ -34,7 +34,9 @@ public class PoolService {
             final Thread currentThread = Thread.currentThread();
             final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(
-                    () -> log.error("Stuck on: {}", currentThread.getName()), 5, 5, TimeUnit.MINUTES
+                    () -> {
+                        log.error("Stuck on: {}", currentThread.getName());
+                    }, 5, 5, TimeUnit.MINUTES
             );
 
             task.run();
@@ -62,7 +64,9 @@ public class PoolService {
 
     private void initScheduledTasks() {
         this.scheduler.scheduleAtFixedRate(() -> {
-            log.info("Currently running {} tasks", this.runningTasks);
+            if (this.runningTasks.get() > 0) {
+                log.info("Currently running {} tasks", this.runningTasks);
+            }
         }, 0, 30, TimeUnit.MINUTES);
     }
 }

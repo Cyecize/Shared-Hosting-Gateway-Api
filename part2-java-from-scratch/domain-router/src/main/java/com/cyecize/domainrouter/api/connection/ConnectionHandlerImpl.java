@@ -65,7 +65,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
     @Override
     public void process(Socket socket) {
         try {
-            Thread.currentThread().setName("Client connection thread");
+            Thread.currentThread().setName("Client connection thread " + socket.getInetAddress());
             final InputStream clientIn = socket.getInputStream();
             final OutputStream clientOut = socket.getOutputStream();
 
@@ -89,7 +89,13 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             }
 
             final DestinationDto server = this.domainsMap.get(host);
-            Thread.currentThread().setName("Client connection thread " + server.getHost() + " " + server.getPort());
+            Thread.currentThread().setName("Client connection thread "
+                    + server.getHost()
+                    + " "
+                    + server.getPort()
+                    + " "
+                    + socket.getInetAddress()
+            );
             final Socket serverConnection;
             try {
                 serverConnection = new Socket(server.getHost(), server.getPort());
@@ -103,8 +109,8 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
 
             this.asyncSocketConnection(
                     () -> {
-                        Thread.currentThread().setName(String.format("Req transfer thread %s:%s",
-                                server.getHost(), server.getPort())
+                        Thread.currentThread().setName(String.format("Req transfer thread %s:%s | %s",
+                                server.getHost(), server.getPort(), socket.getInetAddress())
                         );
                         transferHttpRequest(clientIn, metadata, contentLength, serverConnection.getOutputStream());
                     },
@@ -115,8 +121,8 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
 
             this.asyncSocketConnection(
                     () -> {
-                        Thread.currentThread().setName(String.format("Response transfer thread %s:%s",
-                                server.getHost(), server.getPort())
+                        Thread.currentThread().setName(String.format("Response transfer thread %s:%s | %s",
+                                server.getHost(), server.getPort(), socket.getInetAddress())
                         );
                         transferHttpResponse(serverConnection.getInputStream(), clientOut);
                     },
