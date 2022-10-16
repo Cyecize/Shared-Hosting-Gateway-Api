@@ -73,7 +73,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             try {
                 metadata = HttpProtocolUtils.parseMetadataLines(clientIn, false);
             } catch (CannotParseRequestException ex) {
-                log.warn("Error while reading HTTP Request metadata. {}", ex.getMessage());
+                log.warn("Error while reading HTTP Request metadata (ip: {}). {}", socket.getInetAddress(), ex.getMessage());
                 socket.close();
                 return;
             }
@@ -132,7 +132,7 @@ public class ConnectionHandlerImpl implements ConnectionHandler {
             );
 
         } catch (IOException ex) {
-            log.error("Error while processing client request!", ex);
+            log.error("Error while processing client request! {}", socket.getInetAddress(), ex);
             try {
                 socket.close();
             } catch (IOException ignored) {
